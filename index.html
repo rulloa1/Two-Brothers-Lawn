@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Brothers Lawn Service</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Very subtle off-white for contrast against white cards */
+            color: #0f172a;
+            overflow-x: hidden; 
+        }
+        
+        /* Prevent FOUC */
+        .gsap-reveal { visibility: hidden; }
+
+        /* Custom Soft Shadow for that Stripe feel */
+        .shadow-soft {
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-green-200 selection:text-green-900 relative">
+
+    <div class="absolute top-0 left-0 w-full h-screen overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-green-200/40 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-blue-100/40 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-md border-b border-slate-200/50 transition-all duration-300 gsap-reveal">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 group cursor-pointer">
+                <div class="bg-green-50 p-2 rounded-xl group-hover:bg-green-100 transition-colors">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Two Brothers</span>
+            </div>
+            <a href="tel:2814519214" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                Call Now
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative pt-40 pb-32 px-6 max-w-7xl mx-auto text-center" id="hero">
+        <div class="hero-content">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm text-sm font-medium text-slate-700 mb-8 gsap-reveal hover:border-green-200 transition-colors">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </span>
+                Free Estimates Available
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-bold tracking-tighter text-slate-900 mb-6 leading-[1.05] gsap-reveal">
+                Pristine lawns.<br/>
+                <span class="text-slate-400 bg-clip-text">Affordable prices.</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed gsap-reveal">
+                Comprehensive lawn care for your front and back yard. Professional, reliable service starting at just <strong class="text-slate-900 font-semibold">$30</strong>.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 gsap-reveal">
+                <a href="tel:2814519214" class="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-slate-900 text-white font-medium hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/20 hover:-translate-y-1">
+                    Call 281-451-9214
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+                <a href="sms:8323761419" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-slate-900 border border-slate-200 font-medium hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 hover:shadow-soft hover:-translate-y-1">
+                    Text 832-376-1419
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-32 px-6 relative z-10 bg-white border-t border-slate-100 rounded-t-[3rem]">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 gsap-reveal">
+                <h2 class="text-4xl font-bold tracking-tight text-slate-900 mb-4">Standard Service</h2>
+                <p class="text-lg text-slate-500">Everything you need for a perfectly manicured property.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="group bg-slate-50 hover:bg-white p-8 rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-500 hover:shadow-soft hover:-translate-y-2 gsap-reveal service-card">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm text-slate-900 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:text-green-600 transition-all duration-500">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <circle cx="6" cy="18" r="2"/><circle cx="16" cy="18" r="2"/><path d="M8 18h6"/><path d="M6 16v-2a2 2 0 0 1 2-2h5l3-5h3"/><path d="M16 16v-2h3"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-3">Lawn Mowing</h3>
+                    <p class="text-slate-500 leading-relaxed">Precision mowing for a healthy, even cut across your entire lawn.</p>
+                </div>
+
+                <div class="group bg-slate-50 hover:bg-white p-8 rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-500 hover:shadow-soft hover:-translate-y-2 gsap-reveal service-card">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm text-slate-900 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:text-green-600 transition-all duration-500">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <path d="M18 4l-3 3"/><path d="M21 7l-3 3"/><path d="M18 7L5 20"/><circle cx="4" cy="21" r="2"/><path d="M4 23l-2-2"/><path d="M2 21l2-2"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-3">Weed Eating</h3>
+                    <p class="text-slate-500 leading-relaxed">Trimming in hard-to-reach areas to ensure no tall grass is left behind.</p>
+                </div>
+
+                <div class="group bg-slate-50 hover:bg-white p-8 rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-500 hover:shadow-soft hover:-translate-y-2 gsap-reveal service-card">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm text-slate-900 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:text-green-600 transition-all duration-500">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <path d="M12 2v14"/><path d="M8 16a4 4 0 0 0 8 0H8z"/><path d="M9 7h6"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-3">Edging</h3>
+                    <p class="text-slate-500 leading-relaxed">Creating sharp, clean borders along driveways and walkways.</p>
+                </div>
+
+                <div class="group bg-slate-50 hover:bg-white p-8 rounded-[2rem] border border-transparent hover:border-slate-100 transition-all duration-500 hover:shadow-soft hover:-translate-y-2 gsap-reveal service-card">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm text-slate-900 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:text-green-600 transition-all duration-500">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/><path d="M12.59 19.41A2 2 0 1 0 14 16H2"/><path d="M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-900 mb-3">Air Blow</h3>
+                    <p class="text-slate-500 leading-relaxed">Clearing all clippings from concrete surfaces for a spotless finish.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 bg-slate-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 mb-10 gsap-reveal">Comprehensive Property Solutions</h2>
+            
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Flower Beds</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Weed & Mulch</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Fertilizer Spread</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Grass Planting</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Gutter & Roof Cleaning</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Hedges Pruned</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Pressure Wash</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Tree Cutting & Trimming</div>
+                <div class="px-6 py-3 rounded-full bg-white border border-slate-200 shadow-sm text-slate-700 font-medium hover:border-green-400 hover:text-green-700 hover:shadow-md transition-all duration-300 cursor-default gsap-reveal extra-pill">Root Grinding</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white py-32 px-6 border-t border-slate-100 text-center relative overflow-hidden">
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-50 rounded-[100%] blur-3xl -z-10 opacity-60 pointer-events-none"></div>
+
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6 gsap-reveal">Ready for a better lawn?</h2>
+            <p class="text-lg text-slate-500 mb-12 gsap-reveal">Reach out today for a free estimate. We bring the equipment, you enjoy the results.</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mb-16 gsap-reveal">
+                <a href="tel:2814519214" class="group bg-slate-50 rounded-3xl p-8 w-full sm:w-72 border border-slate-100 hover:bg-white hover:border-green-200 hover:shadow-soft transition-all duration-500 block">
+                    <p class="text-slate-400 text-sm font-medium mb-2 uppercase tracking-wider">Call Us</p>
+                    <p class="text-3xl font-bold text-slate-900 group-hover:text-green-600 transition-colors">281-451-9214</p>
+                </a>
+                <a href="sms:8323761419" class="group bg-slate-50 rounded-3xl p-8 w-full sm:w-72 border border-slate-100 hover:bg-white hover:border-green-200 hover:shadow-soft transition-all duration-500 block">
+                    <p class="text-slate-400 text-sm font-medium mb-2 uppercase tracking-wider">Text Us</p>
+                    <p class="text-3xl font-bold text-slate-900 group-hover:text-green-600 transition-colors">832-376-1419</p>
+                </a>
+            </div>
+            
+            <div class="flex items-center justify-center gap-2 text-slate-400 text-sm font-medium gsap-reveal">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                &copy; 2026 Two Brothers Lawn Service. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Ensure elements are visible when GSAP takes over
+        gsap.set(".gsap-reveal", { autoAlpha: 1 });
+
+        // 1. Initial Load Timeline
+        const heroTl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.2 } });
+        
+        heroTl.fromTo("nav", 
+            { y: -20, opacity: 0 }, 
+            { y: 0, opacity: 1, duration: 1 }
+        )
+        .fromTo("header .gsap-reveal", 
+            { y: 40, opacity: 0 }, 
+            { y: 0, opacity: 1, stagger: 0.1 },
+            "-=0.6"
+        );
+
+        // Parallax scroll effect on hero content
+        gsap.to(".hero-content", {
+            yPercent: 30,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "header",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // 2. Standard Services Reveal
+        gsap.fromTo(".service-card", 
+            { y: 50, opacity: 0 }, 
+            { 
+                y: 0, 
+                opacity: 1, 
+                duration: 1, 
+                stagger: 0.1, 
+                ease: "power3.out",
+                scrollTrigger: { trigger: ".service-card", start: "top 85%" }
+            }
+        );
+
+        // 3. Additional Services (Pills) Reveal
+        gsap.fromTo(".extra-pill", 
+            { scale: 0.9, opacity: 0, y: 20 }, 
+            { 
+                scale: 1,
+                opacity: 1,
+                y: 0,
+                duration: 0.6, 
+                stagger: 0.04, 
+                ease: "back.out(1.5)",
+                scrollTrigger: { trigger: ".extra-pill", start: "top 90%" }
+            }
+        );
+
+        // 4. Footer CTA Reveal
+        gsap.fromTo("footer .gsap-reveal", 
+            { y: 30, opacity: 0 }, 
+            { 
+                y: 0, 
+                opacity: 1, 
+                duration: 1, 
+                stagger: 0.15, 
+                ease: "power3.out",
+                scrollTrigger: { trigger: "footer", start: "top 80%" }
+            }
+        );
+    </script>
+</body>
+</html>
