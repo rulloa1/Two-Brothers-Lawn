@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Two Brothers Lawn · Precision Turf Management</title>
+    <meta name="description"
+        content="Commercial-grade lawn care, precision turf management and seasonal cleanups. Two Brothers Lawn — Houston, TX." />
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP + ScrollTrigger via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ──────────────────────────────────────────────────────
+       DESIGN TOKENS & RESET
+    ────────────────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ink: #0d1117;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --surface: #f8fafc;
+            --green: #15803d;
+            --green-mid: #16a34a;
+            --green-lt: #dcfce7;
+            --green-glow: rgba(22, 163, 74, 0.12);
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #fff;
+            color: var(--ink);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ──────────────────────────────────────────────────────
+       NAVBAR
+    ────────────────────────────────────────────────────── */
+        #navbar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 200;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            -webkit-backdrop-filter: blur(20px) saturate(1.8);
+            backdrop-filter: blur(20px) saturate(1.8);
+            background: rgba(255, 255, 255, 0.68);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            opacity: 0;
+            /* revealed by GSAP */
+            will-change: opacity;
+        }
+
+        .nav-brand {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: 1.0625rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .nav-brand em {
+            font-style: normal;
+            color: var(--green);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-link {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.01em;
+            transition: color 0.2s;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .nav-link {
+                display: inline;
+            }
+        }
+
+        .nav-link:hover {
+            color: var(--ink);
+        }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px -4px rgba(13, 17, 23, 0.3);
+        }
+
+        /* ──────────────────────────────────────────────────────
+       CANVAS SECTION  ·  Pinned 400% by GSAP
+    ────────────────────────────────────────────────────── */
+        #CanvasSection {
+            position: relative;
+            width: 100%;
+            /* Use dvh on mobile (handles browser chrome correctly), fallback to vh */
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: #050705;
+            /* Allow vertical scroll through the pinned sequence on touch */
+            touch-action: pan-y;
+        }
+
+        #mainCanvas {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Cinematic vignette — two-layer gradient for depth */
+        #canvas-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            background:
+                linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.50) 0%,
+                    rgba(0, 0, 0, 0.08) 18%,
+                    rgba(0, 0, 0, 0.00) 40%,
+                    rgba(0, 0, 0, 0.00) 55%,
+                    rgba(0, 0, 0, 0.62) 100%),
+                radial-gradient(ellipse 130% 100% at 50% 50%,
+                    transparent 55%,
+                    rgba(0, 0, 0, 0.28) 100%);
+        }
+
+        /* ── Loader ── */
+        #loader {
+            position: absolute;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: #060907;
+            transition: opacity 0.7s ease;
+        }
+
+        #loader.done {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-wordmark {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.125rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .loader-bar-track {
+            width: 180px;
+            height: 1.5px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        #loader-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4ade80, #16a34a);
+            border-radius: 4px;
+            will-change: width;
+        }
+
+        #loader-pct {
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            color: rgba(255, 255, 255, 0.22);
+        }
+
+        /* ── Scroll-driven Text Overlays ── */
+        .overlay {
+            position: absolute;
+            z-index: 20;
+            pointer-events: none;
+            /* CSS transition for butter-smooth ease-in/out micro-interactions */
+            transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: opacity, transform;
+        }
+
+        /* Section 1 — full-center hero */
+        #ov-1 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, calc(-50% + 28px));
+            text-align: center;
+            width: min(68ch, 92vw);
+            opacity: 0;
+        }
+
+        #ov-1.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        #ov-1 .eyebrow {
+            display: inline-block;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: #86efac;
+            margin-bottom: 1.375rem;
+        }
+
+        #ov-1 h1 {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: clamp(2.75rem, 6.5vw, 5.75rem);
+            line-height: 1.065;
+            color: #fff;
+            letter-spacing: -0.015em;
+        }
+
+        #ov-1 h1 em {
+            font-style: italic;
+            color: #bbf7d0;
+        }
+
+        #ov-1 .sub {
+            margin-top: 1.625rem;
+            font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+            color: rgba(255, 255, 255, 0.42);
+            letter-spacing: 0.055em;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        /* Section 2 — bottom-left */
+        #ov-2 {
+            bottom: 11%;
+            left: max(2rem, 6vw);
+            max-width: min(36ch, 88vw);
+            transform: translateY(24px);
+            opacity: 0;
+        }
+
+        #ov-2.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section 3 — bottom-right */
+        #ov-3 {
+            bottom: 11%;
+            right: max(2rem, 6vw);
+            max-width: min(36ch, 88vw);
+            text-align: right;
+            transform: translateY(24px);
+            opacity: 0;
+        }
+
+        #ov-3.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ov-label {
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #4ade80;
+            margin-bottom: 0.875rem;
+            display: block;
+        }
+
+        .ov-heading {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: clamp(1.875rem, 3.8vw, 3.125rem);
+            color: #fff;
+            line-height: 1.1;
+            letter-spacing: -0.015em;
+        }
+
+        .ov-body {
+            margin-top: 1rem;
+            font-size: 0.9375rem;
+            color: rgba(255, 255, 255, 0.44);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* ── Canvas progress bar (bottom edge) ── */
+        #progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, #4ade80, #16a34a);
+            z-index: 30;
+            will-change: width;
+        }
+
+        /* ── Scroll hint ── */
+        #scroll-hint {
+            position: absolute;
+            bottom: 2.25rem;
+            /* Respect iOS home indicator */
+            bottom: max(2.25rem, env(safe-area-inset-bottom) + 1rem);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.625rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #scroll-hint .mouse {
+            animation: mouse-bounce 1.8s ease-in-out infinite;
+        }
+
+        @keyframes mouse-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(7px);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           MOBILE RESPONSIVE OVERRIDES
+           Mobile-first breakpoints covering the canvas
+           overlay text, below-fold layout, and form.
+        ═══════════════════════════════════════════════════ */
+
+        /* ── Navbar: compact on small screens ── */
+        @media (max-width: 480px) {
+            #navbar {
+                padding: 0 1.25rem;
+                height: 56px;
+            }
+
+            .nav-brand {
+                font-size: 0.9375rem;
+            }
+        }
+
+        /* ── Canvas overlays: scale down & reposition on mobile ── */
+        @media (max-width: 640px) {
+
+            /* Hero — reduce font, give a bit more top margin so it clears navbar */
+            #ov-1 {
+                width: min(92vw, 44ch);
+            }
+
+            #ov-1 h1 {
+                font-size: clamp(2.1rem, 11vw, 3rem);
+                line-height: 1.08;
+            }
+
+            #ov-1 .eyebrow {
+                margin-bottom: 0.875rem;
+            }
+
+            #ov-1 .sub {
+                margin-top: 1rem;
+                font-size: 0.75rem;
+                letter-spacing: 0.04em;
+            }
+
+            /* Sections 2 & 3: both go bottom-left, stacked — avoid split at narrow widths */
+            #ov-2,
+            #ov-3 {
+                bottom: max(5%, env(safe-area-inset-bottom) + 1.5rem);
+                left: 1.25rem;
+                right: 1.25rem;
+                max-width: 100%;
+                text-align: left;
+            }
+
+            #ov-3 {
+                text-align: left;
+            }
+
+            .ov-heading {
+                font-size: clamp(1.5rem, 7vw, 2rem);
+            }
+
+            .ov-body {
+                font-size: 0.875rem;
+                margin-top: 0.625rem;
+            }
+
+            .ov-label {
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* ── Below-fold sections: tighter padding on mobile ── */
+        @media (max-width: 640px) {
+            .section {
+                padding: 3.5rem 1.25rem;
+            }
+
+            .section-heading {
+                font-size: clamp(1.75rem, 7.5vw, 2.25rem);
+            }
+
+            .section-sub {
+                font-size: 0.9375rem;
+            }
+        }
+
+        /* ── Services grid: 1 col on very small, 2 col on tablet ── */
+        @media (max-width: 480px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-top: 2.25rem;
+            }
+
+            .svc-card {
+                padding: 1.625rem 1.375rem;
+                border-radius: 1.125rem;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 767px) {
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* ── Extras pills: smaller on mobile ── */
+        @media (max-width: 480px) {
+            .extras-pill {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.875rem;
+            }
+
+            .extras-strip {
+                margin-top: 2rem;
+                gap: 0.5rem;
+            }
+        }
+
+        /* ── Quote form: single column, better touch targets ── */
+        @media (max-width: 640px) {
+            .quote-grid {
+                margin-top: 2rem;
+                gap: 1rem;
+            }
+
+            .field input,
+            .field select,
+            .field textarea {
+                /* Prevent iOS auto-zoom on focus (needs font-size ≥ 16px) */
+                font-size: 1rem;
+                padding: 0.875rem 1rem;
+            }
+
+            .form-submit {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        /* ── CTA strip: stack buttons on mobile ── */
+        @media (max-width: 480px) {
+            #cta-strip {
+                padding: 3.5rem 1.25rem;
+            }
+
+            .cta-btns {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-dark,
+            .btn-outline {
+                justify-content: center;
+                padding: 1rem;
+            }
+        }
+
+        /* ── Footer: stack on mobile ── */
+        @media (max-width: 640px) {
+            footer {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+                padding: 2rem 1.25rem;
+                /* iOS safe area */
+                padding-bottom: max(2rem, env(safe-area-inset-bottom) + 1rem);
+            }
+        }
+
+        /* ──────────────────────────────────────────────────────
+       BELOW-FOLD
+    ────────────────────────────────────────────────────── */
+        #BelowFold {
+            background: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ── Section wrapper ── */
+        .section {
+            padding: 6rem 2rem;
+        }
+
+        .section-inner {
+            max-width: 72rem;
+            margin: 0 auto;
+        }
+
+        /* ── Section badge + heading ── */
+        .section-badge {
+            display: inline-block;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 0.875rem;
+        }
+
+        .section-heading {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.13;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+        }
+
+        .section-sub {
+            margin-top: 0.875rem;
+            font-size: 1.0625rem;
+            color: var(--muted);
+            max-width: 52ch;
+            line-height: 1.6;
+        }
+
+        /* ── Services Grid ── */
+        #services-hdr {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+
+        .services-grid {
+            margin-top: 3.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .svc-card {
+            padding: 2.25rem 2rem;
+            border-radius: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            /* GSAP reveals each card */
+            opacity: 0;
+            transform: translateY(32px);
+            transition: box-shadow 0.35s ease, transform 0.35s ease, border-color 0.3s;
+            cursor: default;
+        }
+
+        .svc-card:hover {
+            box-shadow: 0 20px 48px -16px rgba(0, 0, 0, 0.10);
+            transform: translateY(-5px) !important;
+            /* override GSAP final state */
+            border-color: #cbd5e1;
+        }
+
+        .svc-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.875rem;
+            background: var(--green-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--green);
+            flex-shrink: 0;
+            transition: background 0.25s, color 0.25s;
+        }
+
+        .svc-card:hover .svc-icon {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .svc-name {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        .svc-desc {
+            font-size: 0.875rem;
+            color: var(--muted);
+            line-height: 1.65;
+            flex: 1;
+        }
+
+        /* Price tag */
+        .svc-price {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .svc-price span {
+            font-weight: 300;
+            color: var(--muted);
+        }
+
+        /* ── Extras pill strip ── */
+        .extras-strip {
+            margin-top: 3rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.625rem;
+        }
+
+        .extras-pill {
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--border);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--muted);
+            transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+            cursor: default;
+            opacity: 0;
+            transform: scale(0.93);
+        }
+
+        .extras-pill:hover {
+            border-color: #a3e635;
+            color: var(--green);
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
+        }
+
+        /* ── Divider ── */
+        .section-divider {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 0;
+        }
+
+        /* ──────────────────────────────────────────────────────
+       QUOTE REQUEST FORM
+    ────────────────────────────────────────────────────── */
+        #quote {
+            background: var(--surface);
+        }
+
+        #quote-hdr {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+
+        #quote-form-wrap {
+            opacity: 0;
+            transform: translateY(32px);
+        }
+
+        .quote-grid {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .quote-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quote-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .field label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--ink);
+            letter-spacing: 0.01em;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 0.9375rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .field input::placeholder,
+        .field textarea::placeholder {
+            color: #cbd5e1;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--green-mid);
+            box-shadow: 0 0 0 3px var(--green-glow);
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.75rem;
+            cursor: pointer;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 110px;
+            line-height: 1.6;
+        }
+
+        .form-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2.25rem;
+            border: none;
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .form-submit:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px -6px rgba(13, 17, 23, 0.28);
+        }
+
+        .form-submit:active {
+            transform: translateY(0);
+        }
+
+        .form-note {
+            font-size: 0.8125rem;
+            color: var(--muted);
+            margin-top: 0.75rem;
+            line-height: 1.55;
+        }
+
+        /* ── Form success state (avoids inline styles) ── */
+        .form-success {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .form-success-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: var(--green-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+
+        .form-success-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--ink);
+        }
+
+        .form-success-body {
+            color: var(--muted);
+            font-size: 0.9375rem;
+            max-width: 36ch;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ──────────────────────────────────────────────────────
+       CTA STRIP  &  FOOTER
+    ────────────────────────────────────────────────────── */
+        #cta-strip {
+            padding: 5rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: #fff;
+        }
+
+        #cta-strip h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 4vw, 3.25rem);
+            margin-bottom: 0.875rem;
+            opacity: 0;
+            transform: translateY(22px);
+        }
+
+        #cta-strip p {
+            font-size: 1.0625rem;
+            color: var(--muted);
+            margin-bottom: 2.25rem;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .cta-btns {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.875rem;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .btn-dark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.875rem 2rem;
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .btn-dark:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px -6px rgba(13, 17, 23, 0.28);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.875rem 2rem;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--ink);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1.5px solid var(--border);
+            transition: border-color 0.2s, transform 0.15s, background 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: #94a3b8;
+            background: var(--surface);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            padding: 2.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8125rem;
+            color: var(--muted);
+        }
+
+        footer .brand {
+            font-family: 'DM Serif Display', serif;
+            font-size: 0.9375rem;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ───────────── NAVBAR ───────────── -->
+    <nav id="navbar" aria-label="Primary navigation">
+        <a href="#" class="nav-brand">Two <em>Brothers</em> Lawn</a>
+        <div class="nav-right">
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#quote" class="nav-link">Free Quote</a>
+            <a href="tel:2814519214" class="nav-cta">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.21 3.53 2 2 0 0 1 3.22 1.35h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.07 16.92z" />
+                </svg>
+                Call Now
+            </a>
+        </div>
+    </nav>
+
+    <!-- ───────────── CANVAS SECTION ───────────── -->
+    <section id="CanvasSection" aria-label="Scroll-driven lawn animation">
+
+        <!-- Loading screen -->
+        <div id="loader" role="progressbar" aria-label="Loading frames">
+            <div class="loader-wordmark">Two Brothers Lawn</div>
+            <div class="loader-bar-track">
+                <div id="loader-fill"></div>
+            </div>
+            <div id="loader-pct">0%</div>
+        </div>
+
+        <!-- Canvas: frames drawn here by JS -->
+        <canvas id="mainCanvas" aria-hidden="true"></canvas>
+
+        <!-- Vignette overlay -->
+        <div id="canvas-vignette" aria-hidden="true"></div>
+
+        <!-- Progress line -->
+        <div id="progress-bar" aria-hidden="true"></div>
+
+        <!-- Scroll hint -->
+        <div id="scroll-hint" aria-hidden="true">
+            <span>Scroll</span>
+            <svg class="mouse" width="16" height="22" viewBox="0 0 16 22" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round">
+                <rect x="1" y="1" width="14" height="20" rx="7" />
+                <line x1="8" y1="5.5" x2="8" y2="9.5" />
+            </svg>
+        </div>
+
+        <!-- TEXT OVERLAY 1 : 0% → 33% -->
+        <div id="ov-1" class="overlay" aria-live="polite">
+            <span class="eyebrow">Est. 2019 · Houston, TX</span>
+            <h1>Two Brothers<br />Lawn. <em>Precision</em><br />Turf Management.</h1>
+            <p class="sub">Commercial Grade &nbsp;·&nbsp; Residential Results</p>
+        </div>
+
+        <!-- TEXT OVERLAY 2 : 33% → 66% -->
+        <div id="ov-2" class="overlay">
+            <span class="ov-label">Section 02 · The Science</span>
+            <h2 class="ov-heading">Commercial Grade.<br />The Physics of<br />the Perfect Cut.</h2>
+            <p class="ov-body">Engineered blade angles, optimized RPM, and precision striping patterns that rival
+                stadium turf.</p>
+        </div>
+
+        <!-- TEXT OVERLAY 3 : 66% → 100% -->
+        <div id="ov-3" class="overlay">
+            <span class="ov-label">Section 03 · The Result</span>
+            <h2 class="ov-heading">Immaculate<br />Landscapes.<br />Built for Living.</h2>
+            <p class="ov-body">Every edge crisp. Every blade even. A yard you're proud to show off from the curb.</p>
+        </div>
+
+    </section><!-- /#CanvasSection -->
+
+    <!-- ───────────── BELOW-FOLD ───────────── -->
+    <main id="BelowFold">
+
+        <!-- ══ SERVICES ══════════════════════════════════════ -->
+        <section class="section" id="services">
+            <div class="section-inner">
+
+                <div id="services-hdr">
+                    <span class="section-badge">What We Do</span>
+                    <h2 class="section-heading">Comprehensive Turf &amp; Property Care</h2>
+                    <p class="section-sub">Professional equipment. Consistent quality. Every visit leaves your property
+                        looking its best.</p>
+                </div>
+
+                <!-- Primary service cards -->
+                <div class="services-grid" id="svc-grid">
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <!-- Mower / lawn icon -->
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="5" cy="17" r="2" />
+                                <circle cx="17" cy="17" r="2" />
+                                <path d="M7 17H3v-4l5-5h8l3 5v4h-2" />
+                                <path d="M3 13h14" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Precision Lawn Mowing</div>
+                            <p class="svc-desc">Even, healthy cuts at the optimal height for your grass type. Diagonal
+                                or straight-line striping available for a stadium-quality finish.</p>
+                        </div>
+                        <div class="svc-price">From $30 <span>/ visit</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 4L6 20" />
+                                <path d="M18 20L6 4" />
+                                <circle cx="6" cy="20" r="2" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Edging &amp; Weed Eating</div>
+                            <p class="svc-desc">Laser-crisp borders along every driveway, walkway, landscape bed, and
+                                curb. Hard-to-reach corners handled with string trimmer precision.</p>
+                        </div>
+                        <div class="svc-price">Included <span>with mow</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Air Blow &amp; Detail</div>
+                            <p class="svc-desc">All clippings cleared from concrete, patios, and driveways. Every visit
+                                ends with a spotless detail pass — no stray grass left behind.</p>
+                        </div>
+                        <div class="svc-price">Included <span>with mow</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22V12m0 0C8 12 6 10 6 6m6 6c4 0 6-2 6-6" />
+                                <path d="M6 6c0-2.5 2-4 6-4s6 1.5 6 4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Fertilizer &amp; Weed Control</div>
+                            <p class="svc-desc">Professional-grade granular fertilizer applied uniformly. Pre- and
+                                post-emergent weed control to keep beds and turf clean all season.</p>
+                        </div>
+                        <div class="svc-price">From $65 <span>/ treatment</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" />
+                                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                                <line x1="12" y1="12" x2="12" y2="16" />
+                                <line x1="10" y1="14" x2="14" y2="14" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Seasonal Cleanup</div>
+                            <p class="svc-desc">Spring green-up removal of winterkill and debris. Fall leaf cleanup, bed
+                                clearing, and mulch refresh so your yard enters every season strong.</p>
+                        </div>
+                        <div class="svc-price">From $80 <span>/ cleanup</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Mulch &amp; Bed Refresh</div>
+                            <p class="svc-desc">Premium hardwood or pine bark mulch installed 2–3 inches deep.
+                                Suppresses weeds, retains moisture, and transforms every landscape bed.</p>
+                        </div>
+                        <div class="svc-price">Custom <span>quote</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Hedge &amp; Shrub Shaping</div>
+                            <p class="svc-desc">Clean, architectural cuts on boxwoods, hollies, privets, and ornamental
+                                grasses. Shaped to complement your home's natural lines.</p>
+                        </div>
+                        <div class="svc-price">From $45 <span>/ session</span></div>
+                    </article>
+
+                    <article class="svc-card">
+                        <div class="svc-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 2v2m6.36 1.64-1.41 1.41M20 12h2M17.95 17.95l-1.41-1.41M12 20v2M6.05 17.95l1.41-1.41M4 12H2M7.41 5.05 6 6.46" />
+                                <circle cx="12" cy="12" r="4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="svc-name">Pressure Washing</div>
+                            <p class="svc-desc">Restore driveways, sidewalks, fences, and patios to a fresh, clean
+                                surface. Removes years of oil stains, mildew, and oxidation fast.</p>
+                        </div>
+                        <div class="svc-price">From $100 <span>/ surface</span></div>
+                    </article>
+
+                </div><!-- /.services-grid -->
+
+                <!-- Additional services pills -->
+                <div class="extras-strip" id="extras-strip">
+                    <div class="extras-pill">Gutter Cleaning</div>
+                    <div class="extras-pill">Tree Trimming</div>
+                    <div class="extras-pill">Root Grinding</div>
+                    <div class="extras-pill">Sod Installation</div>
+                    <div class="extras-pill">Gutter &amp; Roof Clear</div>
+                    <div class="extras-pill">Flower Bed Weeding</div>
+                    <div class="extras-pill">Grass Seeding</div>
+                    <div class="extras-pill">Aeration</div>
+                    <div class="extras-pill">Overseeding</div>
+                    <div class="extras-pill">Irrigation Check</div>
+                </div>
+
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ══ QUOTE FORM ═════════════════════════════════════ -->
+        <section class="section" id="quote">
+            <div class="section-inner">
+
+                <div id="quote-hdr">
+                    <span class="section-badge">Free Estimate</span>
+                    <h2 class="section-heading">Get Your Custom Quote</h2>
+                    <p class="section-sub">Tell us about your property and we'll get back to you within a few hours —
+                        usually same day.</p>
+                </div>
+
+                <div id="quote-form-wrap">
+                    <form id="quote-form" class="quote-grid" novalidate>
+
+                        <div class="field">
+                            <label for="f-name">Full Name</label>
+                            <input id="f-name" type="text" placeholder="Jane Smith" autocomplete="name" required />
+                        </div>
+
+                        <div class="field">
+                            <label for="f-phone">Phone Number</label>
+                            <input id="f-phone" type="tel" placeholder="(713) 000-0000" autocomplete="tel" required />
+                        </div>
+
+                        <div class="field">
+                            <label for="f-email">Email (optional)</label>
+                            <input id="f-email" type="email" placeholder="jane@example.com" autocomplete="email" />
+                        </div>
+
+                        <div class="field">
+                            <label for="f-service">Service Needed</label>
+                            <select id="f-service" required>
+                                <option value="" disabled selected>Choose a service…</option>
+                                <option>Lawn Mowing</option>
+                                <option>Edging &amp; Weed Eating</option>
+                                <option>Fertilizer &amp; Weed Control</option>
+                                <option>Seasonal Cleanup</option>
+                                <option>Mulch &amp; Bed Refresh</option>
+                                <option>Hedge &amp; Shrub Shaping</option>
+                                <option>Pressure Washing</option>
+                                <option>Full Property Package</option>
+                                <option>Other / Not Sure</option>
+                            </select>
+                        </div>
+
+                        <div class="field full">
+                            <label for="f-address">Property Address</label>
+                            <input id="f-address" type="text" placeholder="123 Oak Street, Houston, TX 77001"
+                                autocomplete="street-address" />
+                        </div>
+
+                        <div class="field full">
+                            <label for="f-notes">Additional Notes</label>
+                            <textarea id="f-notes"
+                                placeholder="Property size, frequency, gate access, pets, anything helpful…"></textarea>
+                        </div>
+
+                        <div class="full" style="display:flex; flex-direction:column; gap:0.625rem;">
+                            <div>
+                                <button type="submit" class="form-submit">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="22" y1="2" x2="11" y2="13" />
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                    </svg>
+                                    Request Free Estimate
+                                </button>
+                            </div>
+                            <p class="form-note">We typically respond within 2–4 hours. No spam, ever.</p>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <hr class="section-divider" />
+
+        <!-- ══ CTA STRIP ══════════════════════════════════════ -->
+        <div id="cta-strip">
+            <h2>Ready for an immaculate lawn?</h2>
+            <p>Reach out today — free estimate, no commitment.</p>
+            <div class="cta-btns">
+                <a href="tel:2814519214" class="btn-dark">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.21 3.53 2 2 0 0 1 3.22 1.35h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.07 16.92z" />
+                    </svg>
+                    Call 281-451-9214
+                </a>
+                <a href="sms:8323761419" class="btn-outline">Text 832-376-1419</a>
+                <a href="#quote" class="btn-outline">Get a Quote</a>
+            </div>
+        </div>
+
+        <!-- ══ FOOTER ══════════════════════════════════════════ -->
+        <footer>
+            <span class="brand">Two Brothers Lawn</span>
+            <span>&copy; 2026 Two Brothers Lawn Service &mdash; Houston, TX. All rights reserved.</span>
+        </footer>
+
+    </main><!-- /#BelowFold -->
+
+
+    <!-- ══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
+    <script>
+        /* ═══════════════════════════════════
+           1. FRAME SEQUENCE CONFIG
+        ═══════════════════════════════════ */
+        const TOTAL_FRAMES = 271; // ezgif-frame-001.jpg … 271.jpg
+        const FRAME_BASE = 'file:///C:/Users/roryu/Downloads/two-brothers/ezgif-frame-';
+        const READY_PCT = 0.30; // show page once 30% of frames are loaded
+
+        /* ── Device capability detection ──
+           On mobile / low-memory devices we:
+           • Use DPR=1 (halves canvas pixel count on Retina phones)
+           • Reduce batch size to avoid saturating the network on 4G
+           • Use a tiny scrub lag (0.35) instead of scrub:true to
+             smooth out iOS momentum-scroll micro-jitter
+        ── */
+        const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 1);
+        const IS_LOW_MEM = navigator.deviceMemory !== undefined && navigator.deviceMemory <= 2;
+        const BATCH_SIZE = IS_TOUCH || IS_LOW_MEM ? 8 : 16;
+        const SCRUB_VAL = IS_TOUCH ? 0.35 : true;  // iOS: slight lag prevents jitter
+        /* Cap DPR at 1 on touch devices (phones) and 2 on HiDPI desktops */
+        const DPR_CAP = IS_TOUCH ? 1 : 2;
+
+        /** Zero-padded 3-digit path */
+        const frameSrc = n => FRAME_BASE + String(n).padStart(3, '0') + '.jpg';
+
+        /* ═══════════════════════════════════
+           2. CANVAS SETUP
+        ═══════════════════════════════════ */
+        const canvas = document.getElementById('mainCanvas');
+        // willReadFrequently=false is correct here — we only write
+        const ctx = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
+        const DPR = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+
+        // rAF guard — prevents redundant draw calls when scroll fires
+        // faster than display refresh (common on desktop trackpads)
+        let rafPending = false;
+
+        let canvasW = 0, canvasH = 0;
+
+        function resizeCanvas() {
+            canvasW = canvas.offsetWidth;
+            canvasH = canvas.offsetHeight;
+            canvas.width = canvasW * DPR;
+            canvas.height = canvasH * DPR;
+            ctx.scale(DPR, DPR);
+            if (frames[currentIdx]?.complete) renderFrame(currentIdx);
+        }
+
+        /**
+         * Cover-fit drawImage — equivalent to CSS object-fit:cover
+         */
+        function renderFrame(idx) {
+            const img = frames[idx];
+            if (!img?.complete || !img.naturalWidth) return;
+
+            const iw = img.naturalWidth;
+            const ih = img.naturalHeight;
+            const cw = canvasW;
+            const ch = canvasH;
+
+            // Cover-fit (object-fit: cover behaviour)
+            const scale = Math.max(cw / iw, ch / ih);
+            const dw = iw * scale;
+            const dh = ih * scale;
+            const dx = (cw - dw) / 2;
+            const dy = (ch - dh) / 2;
+
+            ctx.drawImage(img, dx, dy, dw, dh);
+        }
+
+        /**
+         * Throttled renderFrame — enqueues via requestAnimationFrame so we
+         * never draw more than once per display refresh, preventing the
+         * canvas-tear / jitter seen on 60 Hz phones with fast-scroll.
+         */
+        function renderFrameRAF(idx) {
+            if (rafPending) return;
+            rafPending = true;
+            requestAnimationFrame(() => {
+                rafPending = false;
+                renderFrame(idx);
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        /* ═══════════════════════════════════
+           3. FRAME PRELOADER
+        ═══════════════════════════════════ */
+        /** frames[0] = image for ezgif-frame-001, etc. */
+        const frames = new Array(TOTAL_FRAMES).fill(null);
+        let loadedCount = 0;
+        let currentIdx = 0;
+        let gsapBooted = false;
+
+        const loaderEl = document.getElementById('loader');
+        const loaderFill = document.getElementById('loader-fill');
+        const loaderPct = document.getElementById('loader-pct');
+
+        function onFrameLoaded(img, i) {
+            frames[i] = img;
+            loadedCount++;
+            const pct = loadedCount / TOTAL_FRAMES;
+            loaderFill.style.width = (pct * 100).toFixed(1) + '%';
+            loaderPct.textContent = Math.round(pct * 100) + '%';
+
+            // Draw first available frame immediately
+            if (i === 0 && img.complete) renderFrame(0);
+
+            // Once threshold reached, boot GSAP and hide loader
+            if (!gsapBooted && pct >= READY_PCT) {
+                gsapBooted = true;
+                showPage();
+                bootGSAP();
+            }
+        }
+
+        async function preloadAll() {
+            for (let batch = 0; batch < TOTAL_FRAMES; batch += BATCH_SIZE) {
+                const promises = [];
+                const end = Math.min(batch + BATCH_SIZE, TOTAL_FRAMES);
+                for (let i = batch; i < end; i++) {
+                    promises.push(new Promise(resolve => {
+                        const img = new Image();
+                        img.onload = img.onerror = () => { onFrameLoaded(img, i); resolve(); };
+                        img.src = frameSrc(i + 1); // files are 1-indexed
+                    }));
+                }
+                await Promise.all(promises);
+            }
+        }
+
+        function showPage() {
+            // Fade out loader
+            loaderEl.classList.add('done');
+            setTimeout(() => { loaderEl.style.display = 'none'; }, 750);
+            // Resize canvas (was display:none-ish during load)
+            resizeCanvas();
+            renderFrame(0);
+        }
+
+        preloadAll();
+
+        /* ═══════════════════════════════════
+           4. GSAP + ScrollTrigger
+        ═══════════════════════════════════ */
+        gsap.registerPlugin(ScrollTrigger);
+
+        function bootGSAP() {
+            /* ── 4a. Navbar entrance ── */
+            gsap.to('#navbar', { opacity: 1, duration: 1.1, ease: 'power2.out', delay: 0.15 });
+
+            /* ─────────────────────────────────────────────────────
+               4b. PIN + FRAME SCRUB
+               scrub: true = perfect 1:1, zero lag, Apple-style.
+               The overlay text changes are driven inside onUpdate
+               using CSS class toggling + CSS transitions (ease-in-out),
+               giving us butter-smooth micro-interactions without GSAP
+               having to track each element through tweens.
+            ───────────────────────────────────────────────────── */
+            ScrollTrigger.create({
+                trigger: '#CanvasSection',
+                start: 'top top',
+                end: '+=400%',        // 400vh total scroll distance
+                pin: true,
+                pinSpacing: true,
+                // Desktop: scrub:true = 1:1 no lag (Apple-style)
+                // Touch:   scrub:0.35 = minimal lag smooths iOS momentum jitter
+                scrub: SCRUB_VAL,
+
+                onUpdate(self) {
+                    const p = self.progress;  // 0 → 1
+
+                    /* ── Frame index ── */
+                    const idx = Math.min(
+                        Math.floor(p * TOTAL_FRAMES),
+                        TOTAL_FRAMES - 1
+                    );
+                    if (idx !== currentIdx) {
+                        currentIdx = idx;
+                        // Use rAF-throttled draw on touch to prevent jitter;
+                        // direct draw on desktop for perfect 1:1 scrub
+                        if (IS_TOUCH) { renderFrameRAF(idx); }
+                        else { renderFrame(idx); }
+                    }
+
+                    /* ── Progress bar ── */
+                    document.getElementById('progress-bar').style.width = (p * 100).toFixed(2) + '%';
+
+                    /* ── Scroll hint ── */
+                    document.getElementById('scroll-hint').style.opacity = p > 0.015 ? '0' : '1';
+
+                    /* ── Text overlay class toggling
+                         Each overlay has a .visible class that CSS transitions
+                         smoothly with cubic-bezier ease-in-out.
+                         Checkpoints (progress):
+                           ov-1  : 0.00 – 0.35
+                           ov-2  : 0.33 – 0.66
+                           ov-3  : 0.66 – 0.96
+                    ── */
+                    toggleOverlay('ov-1', p, 0.00, 0.35);
+                    toggleOverlay('ov-2', p, 0.33, 0.66);
+                    toggleOverlay('ov-3', p, 0.66, 0.96);
+                },
+
+                onLeave() { renderFrame(TOTAL_FRAMES - 1); },
+                onLeaveBack() { renderFrame(0); },
+            });
+
+            /* ─────────────────────────────────────────────────────
+               4c. Below-fold reveals (standard ScrollTrigger)
+            ───────────────────────────────────────────────────── */
+
+            // Services header
+            gsap.to('#services-hdr', {
+                opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+                scrollTrigger: { trigger: '#services-hdr', start: 'top 83%' }
+            });
+
+            // Service cards — staggered entrance
+            gsap.to('#svc-grid .svc-card', {
+                opacity: 1, y: 0,
+                duration: 0.7, ease: 'power3.out', stagger: 0.075,
+                scrollTrigger: { trigger: '#svc-grid', start: 'top 83%' }
+            });
+
+            // Extra pills — pop in with back easing
+            gsap.to('#extras-strip .extras-pill', {
+                opacity: 1, scale: 1,
+                duration: 0.5, ease: 'back.out(1.6)', stagger: 0.04,
+                scrollTrigger: { trigger: '#extras-strip', start: 'top 88%' }
+            });
+
+            // Quote form header
+            gsap.to('#quote-hdr', {
+                opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+                scrollTrigger: { trigger: '#quote-hdr', start: 'top 83%' }
+            });
+
+            // Quote form body
+            gsap.to('#quote-form-wrap', {
+                opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', delay: 0.1,
+                scrollTrigger: { trigger: '#quote-form-wrap', start: 'top 83%' }
+            });
+
+            // CTA strip
+            gsap.to('#cta-strip h2', {
+                opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+                scrollTrigger: { trigger: '#cta-strip', start: 'top 82%' }
+            });
+            gsap.to('#cta-strip p', {
+                opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', delay: 0.1,
+                scrollTrigger: { trigger: '#cta-strip', start: 'top 82%' }
+            });
+            gsap.to('.cta-btns', {
+                opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', delay: 0.2,
+                scrollTrigger: { trigger: '#cta-strip', start: 'top 82%' }
+            });
+        }
+
+        /* ═══════════════════════════════════
+           5. OVERLAY TOGGLE HELPER
+           Adds/removes .visible based on progress range.
+           The actual transition is handled entirely by CSS
+           (cubic-bezier ease-in-out, 0.45s) — zero GSAP overhead.
+        ═══════════════════════════════════ */
+        const overlayStates = {};  // tracks last state to avoid DOM thrashing
+
+        function toggleOverlay(id, p, lo, hi) {
+            const shouldShow = p >= lo && p <= hi;
+            if (overlayStates[id] === shouldShow) return;
+            overlayStates[id] = shouldShow;
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('visible', shouldShow);
+        }
+
+        /* ═══════════════════════════════════
+           6. QUOTE FORM — minimal client handler
+        ═══════════════════════════════════ */
+        document.getElementById('quote-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('f-name').value.trim();
+            const phone = document.getElementById('f-phone').value.trim();
+            const service = document.getElementById('f-service').value;
+
+            if (!name || !phone || !service) {
+                // Subtle shake on fields
+                [!name && 'f-name', !phone && 'f-phone', !service && 'f-service'].forEach(id => {
+                    if (!id) return;
+                    const el = document.getElementById(id);
+                    el.style.borderColor = '#f87171';
+                    el.style.boxShadow = '0 0 0 3px rgba(248,113,113,0.15)';
+                    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2000);
+                });
+                return;
+            }
+
+            // Replace form with success state (uses .form-success CSS classes — no inline styles)
+            const wrap = document.getElementById('quote-form-wrap');
+            wrap.innerHTML = `
+        <div class="form-success">
+          <div class="form-success-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h3 class="form-success-title">We got it, ${name.split(' ')[0]}!</h3>
+          <p class="form-success-body">
+            Expect a call or text to ${phone} within a few hours. We look forward to working with you.
+          </p>
+        </div>`;
+
+            gsap.from(wrap, { opacity: 0, y: 20, duration: 0.6, ease: 'power2.out' });
+        });
+
+        /* ═══════════════════════════════════
+           7. INITIAL CANVAS SIZE
+        ═══════════════════════════════════ */
+        // Set canvas dimensions right away (loader covers it so no flash)
+        resizeCanvas();
+    </script>
+
+</body>
+
+</html>
